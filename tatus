@@ -1,0 +1,101 @@
+ .gitignore                                         |    72 [32m+[m[31m-[m
+ backend/Untitled6.ipynb                            |   721 [31m-[m
+ backend/main.py                                    |   343 [32m+[m[31m-[m
+ backend/modules/app_metrics.py                     |   247 [32m+[m
+ backend/modules/copernicusfetch.py                 |   298 [32m+[m
+ backend/modules/geospatial_analytics.py            |   429 [31m-[m
+ backend/modules/super_resolution.py                |   337 [32m+[m[31m-[m
+ backend/modules/urban_analysis.py                  |   348 [32m+[m[31m-[m
+ backend/outputs/crop_bicubic_10m.png               |   Bin [31m440690[m -> [32m0[m bytes
+ backend/outputs/crop_enhanced_2p5m.png             |   Bin [31m520149[m -> [32m0[m bytes
+ .../outputs/lat16p5062_lon80p645/app_atlas_hr.png  |   Bin [31m17877498[m -> [32m0[m bytes
+ .../outputs/lat16p5062_lon80p645/app_zoom_hr.png   |   Bin [31m2619077[m -> [32m0[m bytes
+ .../lat16p5062_lon80p645/bicubic_baseline.png      |   Bin [31m6422097[m -> [32m0[m bytes
+ .../lat16p5062_lon80p645/comparison_10m_vs_sr.png  |   Bin [31m4120184[m -> [32m0[m bytes
+ backend/outputs/lat16p5062_lon80p645/input_10m.png |   Bin [31m660784[m -> [32m0[m bytes
+ backend/outputs/lat16p5062_lon80p645/mosaic_sr.png |   Bin [31m7089968[m -> [32m0[m bytes
+ .../lat16p5062_lon80p645/sr_georef_2p5m.tif        |   Bin [31m12018023[m -> [32m0[m bytes
+ .../srm_application_metrics.csv                    |    27 [31m-[m
+ .../outputs/lat16p5062_lon80p648/app_atlas_hr.png  |   Bin [31m19060376[m -> [32m0[m bytes
+ .../outputs/lat16p5062_lon80p648/app_zoom_hr.png   |   Bin [31m2710599[m -> [32m0[m bytes
+ .../lat16p5062_lon80p648/bicubic_baseline.png      |   Bin [31m6308270[m -> [32m0[m bytes
+ .../building_footprints.geojson                    | 27579 [31m------[m
+ .../lat16p5062_lon80p648/comparison_10m_vs_sr.png  |   Bin [31m4312760[m -> [32m0[m bytes
+ .../compliance_violations.geojson                  |  2451 [31m-[m
+ .../comprehensive_spatial_audit.png                |   Bin [31m4879803[m -> [32m0[m bytes
+ .../lat16p5062_lon80p648/crop_health_map.png       |   Bin [31m1098965[m -> [32m0[m bytes
+ .../lat16p5062_lon80p648/crop_monitoring.json      |    33 [31m-[m
+ .../crop_monitoring_comparison.png                 |   Bin [31m5778715[m -> [32m0[m bytes
+ .../outputs/lat16p5062_lon80p648/crop_ndvi_map.png |   Bin [31m2520797[m -> [32m0[m bytes
+ backend/outputs/lat16p5062_lon80p648/input_10m.png |   Bin [31m652904[m -> [32m0[m bytes
+ backend/outputs/lat16p5062_lon80p648/mosaic_sr.png |   Bin [31m7941446[m -> [32m0[m bytes
+ .../lat16p5062_lon80p648/rfmsr_tile_r0_c0.log      |    39 [31m-[m
+ .../lat16p5062_lon80p648/road_detection_panels.png |   Bin [31m8368780[m -> [32m0[m bytes
+ backend/outputs/lat16p5062_lon80p648/road_mask.png |   Bin [31m84204[m -> [32m0[m bytes
+ .../outputs/lat16p5062_lon80p648/road_overlay.png  |   Bin [31m5441136[m -> [32m0[m bytes
+ .../lat16p5062_lon80p648/sr_georef_2p5m.tif        |   Bin [31m11971103[m -> [32m0[m bytes
+ .../srm_application_metrics.csv                    |    27 [31m-[m
+ .../lat16p5062_lon80p648/tiles_in/tile_0_0.png     |   Bin [31m663842[m -> [32m0[m bytes
+ .../lat16p5062_lon80p648/urban_analysis.json       |   148 [31m-[m
+ .../lat24p54123_lon99p66797/app_atlas_hr.png       |   Bin [31m16248333[m -> [32m0[m bytes
+ .../lat24p54123_lon99p66797/app_zoom_hr.png        |   Bin [31m1445896[m -> [32m0[m bytes
+ .../lat24p54123_lon99p66797/bicubic_baseline.png   |   Bin [31m5416482[m -> [32m0[m bytes
+ .../comparison_10m_vs_sr.png                       |   Bin [31m3717185[m -> [32m0[m bytes
+ .../outputs/lat24p54123_lon99p66797/input_10m.png  |   Bin [31m586972[m -> [32m0[m bytes
+ .../outputs/lat24p54123_lon99p66797/mosaic_sr.png  |   Bin [31m6300711[m -> [32m0[m bytes
+ .../lat24p54123_lon99p66797/sr_georef_2p5m.tif     |   Bin [31m11162476[m -> [32m0[m bytes
+ .../srm_application_metrics.csv                    |    27 [31m-[m
+ backend/outputs/test_run/app_atlas_hr.png          |   Bin [31m23247075[m -> [32m0[m bytes
+ backend/outputs/test_run/app_zoom_hr.png           |   Bin [31m2959407[m -> [32m0[m bytes
+ backend/outputs/test_run/comparison_10m_vs_sr.png  |   Bin [31m5506526[m -> [32m0[m bytes
+ .../outputs/test_run/srm_application_metrics.csv   |    27 [31m-[m
+ .../outputs/test_run_validation/app_atlas_hr.png   |   Bin [31m19185399[m -> [32m0[m bytes
+ .../outputs/test_run_validation/app_zoom_hr.png    |   Bin [31m2843248[m -> [32m0[m bytes
+ .../test_run_validation/bicubic_baseline.png       |   Bin [31m6475594[m -> [32m0[m bytes
+ .../test_run_validation/comparison_10m_vs_sr.png   |   Bin [31m4362288[m -> [32m0[m bytes
+ .../disaster_assessment_overview.png               |   Bin [31m5884724[m -> [32m0[m bytes
+ backend/outputs/test_run_validation/input_10m.png  |   Bin [31m663842[m -> [32m0[m bytes
+ backend/outputs/test_run_validation/mosaic_sr.png  |   Bin [31m7986974[m -> [32m0[m bytes
+ .../outputs/test_run_validation/sr_georef_2p5m.tif |   Bin [31m12118142[m -> [32m0[m bytes
+ .../srm_application_metrics.csv                    |    27 [31m-[m
+ backend/rfmsrh.ipynb                               |  4126 [31m-[m
+ backend/rfmsrh_(1).ipynb                           |  4063 [31m-[m
+ backend/test_1step_out/tile_in.png                 |   Bin [31m2068[m -> [32m0[m bytes
+ backend/test_512.png                               |   Bin [31m788094[m -> [32m0[m bytes
+ backend/test_fast_out/tile_128.png                 |   Bin [31m149736[m -> [32m0[m bytes
+ frontend/dist/assets/index-C010XcsM.css            |     1 [31m-[m
+ frontend/dist/assets/index-DIYw5vin.js             |   285 [31m-[m
+ frontend/dist/index.html                           |    17 [31m-[m
+ frontend/index.html                                |    35 [32m+[m[31m-[m
+ frontend/node_modules/.bin/autoprefixer            |    16 [31m-[m
+ frontend/node_modules/.bin/autoprefixer.cmd        |    17 [31m-[m
+ frontend/node_modules/.bin/autoprefixer.ps1        |    28 [31m-[m
+ .../node_modules/.bin/baseline-browser-mapping     |    16 [31m-[m
+ .../node_modules/.bin/baseline-browser-mapping.cmd |    17 [31m-[m
+ .../node_modules/.bin/baseline-browser-mapping.ps1 |    28 [31m-[m
+ frontend/node_modules/.bin/browserslist            |    16 [31m-[m
+ frontend/node_modules/.bin/browserslist.cmd        |    17 [31m-[m
+ frontend/node_modules/.bin/browserslist.ps1        |    28 [31m-[m
+ frontend/node_modules/.bin/cssesc                  |    16 [31m-[m
+ frontend/node_modules/.bin/cssesc.cmd              |    17 [31m-[m
+ frontend/node_modules/.bin/cssesc.ps1              |    28 [31m-[m
+ frontend/node_modules/.bin/esbuild                 |    16 [31m-[m
+ frontend/node_modules/.bin/esbuild.cmd             |    17 [31m-[m
+ frontend/node_modules/.bin/esbuild.ps1             |    28 [31m-[m
+ frontend/node_modules/.bin/jiti                    |    16 [31m-[m
+ frontend/node_modules/.bin/jiti.cmd                |    17 [31m-[m
+ frontend/node_modules/.bin/jiti.ps1                |    28 [31m-[m
+ frontend/node_modules/.bin/jsesc                   |    16 [31m-[m
+ frontend/node_modules/.bin/jsesc.cmd               |    17 [31m-[m
+ frontend/node_modules/.bin/jsesc.ps1               |    28 [31m-[m
+ frontend/node_modules/.bin/json5                   |    16 [31m-[m
+ frontend/node_modules/.bin/json5.cmd               |    17 [31m-[m
+ frontend/node_modules/.bin/json5.ps1               |    28 [31m-[m
+ frontend/node_modules/.bin/loose-envify            |    16 [31m-[m
+ frontend/node_modules/.bin/loose-envify.cmd        |    17 [31m-[m
+ frontend/node_modules/.bin/loose-envify.ps1        |    28 [31m-[m
+ frontend/node_modules/.bin/nanoid                  |    16 [31m-[m
+ frontend/node_modules/.bin/nanoid.cmd              |    17 [31m-[m
+ frontend/node_modules/.bin/nanoid.ps1              |    28 [31m-[m
+ frontend/node_modules/.bin/parser                  |    16 [31m-[m
+ frontend/node_modules

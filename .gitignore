@@ -1,0 +1,97 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+
+# Environment
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+.env.local
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Satellite caches and generated data
+backend/cache/
+backend/outputs/
+*.tif
+*.tif.download
+*.log
+
+# Large model weights
+*.safetensors
+*.pth
+*.pt
+*.bin
+backend/RFMSR/ckpts/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Temporary
+backend/scratch_*.py
+backend/outputs/test_*
+backend/outputs/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.npy
+
+# Satellite/cache files
+backend/cache/
+*.tif
+*.log
+# Frontend dependencies
+frontend/node_modules/
+
+# Frontend build output
+frontend/dist/
+
+# Backend generated outputs
+backend/outputs/
+
+# Environment files
+.env
+.env.*
+backend/.env
+frontend/.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Satellite/cache files
+backend/cache/
+
+# Large model files
+*.safetensors
+*.pth
+*.pt
+*.bin
+
+# Raster/log files
+*.tif
+*.log
+
+# Editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
