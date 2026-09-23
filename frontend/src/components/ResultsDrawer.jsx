@@ -3,8 +3,6 @@ import {
   X,
   SlidersHorizontal,
   Split,
-  Grid3X3,
-  ZoomIn,
   Table,
   ShieldAlert,
   Download,
@@ -26,7 +24,7 @@ import BeforeAfterSlider from './BeforeAfterSlider';
 import MetricsTable from './MetricsTable';
 
 export default function ResultsDrawer({ results, isOpen, onClose }) {
-  const [activeTab, setActiveTab] = useState('slider'); // 'slider' | 'sidebyside' | 'atlas' | 'zoom' | 'metrics' | 'crop' | 'urban' | 'disaster'
+  const [activeTab, setActiveTab] = useState('slider'); // 'slider' | 'sidebyside' | 'metrics' | 'crop' | 'urban' | 'disaster'
   const [cropView, setCropView] = useState('comparison'); // 'comparison' | 'ndvi' | 'health'
   const [urbanView, setUrbanView] = useState('audit'); // 'audit' | 'roads' | 'overlay'
 
@@ -129,29 +127,6 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
               Side-by-Side
             </button>
 
-            <button
-              onClick={() => setActiveTab('atlas')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
-                activeTab === 'atlas'
-                  ? 'bg-primary-900 text-white font-bold shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-              }`}
-            >
-              <Grid3X3 className="h-3.5 w-3.5" />
-              3×3 HR Atlas
-            </button>
-
-            <button
-              onClick={() => setActiveTab('zoom')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
-                activeTab === 'zoom'
-                  ? 'bg-primary-900 text-white font-bold shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-              }`}
-            >
-              <ZoomIn className="h-3.5 w-3.5" />
-              Zoom Crops
-            </button>
 
             <button
               onClick={() => setActiveTab('metrics')}
@@ -297,43 +272,6 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
             </div>
           )}
 
-          {/* TAB 3: 3x3 HR ATLAS */}
-          {activeTab === 'atlas' && (
-            <div className="space-y-4 max-w-6xl mx-auto">
-              <div className="flex items-center justify-between text-xs text-slate-600">
-                <span>9 Computer Vision Models Overlaid on 2.5 m High-Resolution True-Colour Imagery</span>
-                <a
-                  href={images.atlas_3x3}
-                  download="app_atlas_hr.png"
-                  className="text-primary-900 hover:text-accent-600 flex items-center gap-1 font-semibold transition-colors"
-                >
-                  <Download className="h-3.5 w-3.5" /> Download Full 3×3 Atlas
-                </a>
-              </div>
-              <div className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-xl">
-                <img src={images.atlas_3x3} alt="3x3 HR Atlas" className="w-full h-auto object-contain" />
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: ZOOM VALIDATION CROPS */}
-          {activeTab === 'zoom' && (
-            <div className="space-y-4 max-w-6xl mx-auto">
-              <div className="flex items-center justify-between text-xs text-slate-600">
-                <span>Center Zoom Crops: Roofs & Small Buildings, Narrow Roads Network, Ponds & Shorelines</span>
-                <a
-                  href={images.zoom_strip}
-                  download="app_zoom_hr.png"
-                  className="text-primary-900 hover:text-accent-600 flex items-center gap-1 font-semibold transition-colors"
-                >
-                  <Download className="h-3.5 w-3.5" /> Download Zoom Strip
-                </a>
-              </div>
-              <div className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-xl">
-                <img src={images.zoom_strip} alt="Zoom Crops" className="w-full h-auto object-contain" />
-              </div>
-            </div>
-          )}
 
           {/* TAB 5: QUANTITATIVE METRICS TABLE */}
           {activeTab === 'metrics' && (

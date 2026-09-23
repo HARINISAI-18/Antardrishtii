@@ -6,7 +6,7 @@ const STAGES = [
   { id: 2, name: 'Radiometric Calibration', desc: 'Reading B04, B03, B02, B08 & 2-98% percentile stretching' },
   { id: 3, name: '4× Super-Resolution', desc: 'Upscaling medium-res (10 m) to high-res (2.5 m) grid' },
   { id: 4, name: 'Geospatial Analytics', desc: 'Executing 9 specialized Computer Vision application models' },
-  { id: 5, name: 'Atlas & Reporting', desc: 'Synthesizing 3×3 HR Analysis Atlas & performance metrics' },
+  { id: 5, name: 'Analytics & Reporting', desc: 'Synthesizing geospatial analytics & performance metrics' },
 ];
 
 export default function LoadingIndicator() {

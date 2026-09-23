@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Layers, ZoomIn, Grid3X3, Split, Download, Maximize2, X } from 'lucide-react';
+import { Layers, Split, Download, Maximize2, X } from 'lucide-react';
 
 export default function ImageComparison({ images, sceneInfo, disasterInfo }) {
-  const [activeTab, setActiveTab] = useState('comparison'); // 'comparison' | 'atlas' | 'zoom' | 'disaster'
+  const [activeTab, setActiveTab] = useState('comparison'); // 'comparison' | 'disaster'
   const [modalImage, setModalImage] = useState(null);
 
   if (!images) return null;
@@ -37,29 +37,6 @@ export default function ImageComparison({ images, sceneInfo, disasterInfo }) {
             Comparison
           </button>
 
-          <button
-            onClick={() => setActiveTab('atlas')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === 'atlas'
-                ? 'bg-brand-500/20 text-brand-400 font-medium border border-brand-500/30'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Grid3X3 className="h-3.5 w-3.5" />
-            3×3 HR Atlas
-          </button>
-
-          <button
-            onClick={() => setActiveTab('zoom')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              activeTab === 'zoom'
-                ? 'bg-brand-500/20 text-brand-400 font-medium border border-brand-500/30'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <ZoomIn className="h-3.5 w-3.5" />
-            Zoom Crops
-          </button>
 
           {disasterInfo && (
             <button
@@ -164,57 +141,6 @@ export default function ImageComparison({ images, sceneInfo, disasterInfo }) {
           </div>
         )}
 
-        {/* Tab 2: 3x3 HR Atlas */}
-        {activeTab === 'atlas' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>9 Remote Sensing Applications overlaid directly onto the 2.5 m High-Resolution true-colour image</span>
-              <a
-                href={images.atlas_3x3}
-                download="app_atlas_hr.png"
-                className="flex items-center gap-1.5 text-brand-400 hover:underline"
-              >
-                <Download className="h-3.5 w-3.5" />
-                Download 3×3 Atlas
-              </a>
-            </div>
-            <div
-              className="rounded-xl overflow-hidden border border-slate-800 cursor-pointer group relative bg-slate-900"
-              onClick={() => setModalImage({ src: images.atlas_3x3, title: '3×3 HR Analysis Atlas' })}
-            >
-              <img src={images.atlas_3x3} alt="3x3 Atlas" className="w-full h-auto object-contain" />
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Maximize2 className="h-8 w-8 text-white" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Zoom Validation Crops */}
-        {activeTab === 'zoom' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>Center Zoom Validation Crops (Roofs & Buildings, Narrow Roads, Water Bodies)</span>
-              <a
-                href={images.zoom_strip}
-                download="app_zoom_hr.png"
-                className="flex items-center gap-1.5 text-brand-400 hover:underline"
-              >
-                <Download className="h-3.5 w-3.5" />
-                Download Zoom Strip
-              </a>
-            </div>
-            <div
-              className="rounded-xl overflow-hidden border border-slate-800 cursor-pointer group relative bg-slate-900"
-              onClick={() => setModalImage({ src: images.zoom_strip, title: 'Zoom Validation Strip' })}
-            >
-              <img src={images.zoom_strip} alt="Zoom Strip" className="w-full h-auto object-contain" />
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Maximize2 className="h-8 w-8 text-white" />
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Tab 4: Disaster Assessment */}
         {activeTab === 'disaster' && disasterInfo && (

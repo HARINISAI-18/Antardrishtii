@@ -21,7 +21,7 @@ const PROGRESS_STAGES = [
   'Radiometric calibration (B04, B03, B02, B08)',
   'Running 4× Super-Resolution mosaic',
   'Executing 9 Computer Vision analytical models',
-  'Synthesizing 3×3 HR Analysis Atlas',
+  'Synthesizing Multi-Spectral Analytics & Metrics',
   'Evaluating Crop NDVI & Vegetation Health',
   'Conducting Urban Audit & Road Network Extraction'
 ];
