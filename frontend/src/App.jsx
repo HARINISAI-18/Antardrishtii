@@ -29,6 +29,7 @@ export default function App() {
   const [results, setResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStage, setCurrentStage] = useState(1);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [toast, setToast] = useState(null);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const [triggerFlyTo, setTriggerFlyTo] = useState(0);
@@ -124,13 +125,12 @@ export default function App() {
   // Run full-stack pipeline
   const handleRunPipeline = async () => {
     setIsLoading(true);
+    setIsCompleted(false);
     setCurrentStage(1);
     setIsResultsOpen(false);
+    setResults(null);
 
-    // Progress stage timer simulation
-    const stageTimer = setInterval(() => {
-      setCurrentStage((s) => (s < 7 ? s + 1 : s));
-    }, 4000);
+    const enableDisaster = Boolean(formValues.enable_disaster_assessment);
 
     try {
       const payload = {
@@ -140,9 +140,10 @@ export default function App() {
         date_range: formValues.date_range,
         max_cloud: parseInt(formValues.max_cloud),
         min_usable: parseFloat(formValues.min_usable),
-        enable_disaster_assessment: Boolean(formValues.enable_disaster_assessment),
+        enable_disaster_assessment: enableDisaster,
         disaster_event_key: formValues.disaster_event_key,
-        engine_mode: formValues.engine_mode || 'auto'
+        engine_mode: formValues.engine_mode || 'auto',
+        stream: true
       };
 
       const res = await fetch(`${API_BASE}/api/process`, {
@@ -153,22 +154,120 @@ export default function App() {
         body: JSON.stringify(payload)
       });
 
-      clearInterval(stageTimer);
-
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.detail || `Backend responded with code ${res.status}`);
       }
 
-      const data = await res.json();
-      setResults(data);
-      setIsResultsOpen(true);
-      setToast({
-        type: 'success',
-        message: `4× Super-Resolution completed! Scene: ${data.scene_info?.id || 'Sentinel-2'}`
-      });
+      const contentType = res.headers.get('content-type') || '';
+      if (res.body && (contentType.includes('application/x-ndjson') || !contentType.includes('application/json'))) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // keep partial line for next iteration
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+            try {
+              const chunk = JSON.parse(trimmed);
+
+              if (chunk.status === 'error' || chunk.stage === 'error') {
+                throw new Error(chunk.detail || chunk.error || 'Pipeline processing failed');
+              }
+
+              // Merge incoming chunk into results
+              setResults((prev) => ({
+                ...prev,
+                ...chunk,
+                scene_info: chunk.scene_info || prev?.scene_info,
+                engine: chunk.engine || prev?.engine,
+                images: { ...(prev?.images || {}), ...(chunk.images || {}) },
+                downloads: { ...(prev?.downloads || {}), ...(chunk.downloads || {}) },
+                timings: { ...(prev?.timings || {}), ...(chunk.timings || {}) },
+                processing: { ...(prev?.processing || {}), ...(chunk.processing || {}) }
+              }));
+
+              // Change in the bar seen when actual output is displayed on frontend:
+              if (chunk.stage === 'scene_ready') {
+                // i) SR image generation complete & displayed -> move to ii) Metrics
+                setCurrentStage(2);
+                setIsResultsOpen(true);
+                setToast({
+                  type: 'info',
+                  message: `Scene & 4× SR Image ready! Displaying first output...`
+                });
+              } else if (chunk.stage === 'metrics_ready') {
+                // ii) Metrics complete & displayed -> move to iii) Disaster (if enabled) or iv) Crop
+                setCurrentStage(3);
+              } else if (chunk.stage === 'disaster_ready') {
+                // iii) Disaster complete & displayed -> move to iv) Crop
+                setCurrentStage(4);
+              } else if (chunk.stage === 'crop_ready') {
+                // iv) Crop complete & displayed -> move to v) Urban
+                setCurrentStage(enableDisaster ? 5 : 4);
+              } else if (chunk.stage === 'urban_ready' || chunk.stage === 'complete') {
+                // v) Urban complete & all stages done! Indicate completion only when done
+                setIsCompleted(true);
+                setIsLoading(false);
+                setToast({
+                  type: 'success',
+                  message: `All generated outputs & analytics completed!`
+                });
+              }
+            } catch (chunkErr) {
+              if (chunkErr.message && !chunkErr.message.includes('JSON')) {
+                throw chunkErr;
+              }
+              console.warn('Chunk parse notice:', chunkErr);
+            }
+          }
+        }
+
+        // Process any trailing buffer
+        if (buffer && buffer.trim()) {
+          try {
+            const chunk = JSON.parse(buffer.trim());
+            if (chunk.status === 'error' || chunk.stage === 'error') {
+              throw new Error(chunk.detail || chunk.error || 'Pipeline processing failed');
+            }
+            setResults((prev) => ({
+              ...prev,
+              ...chunk,
+              scene_info: chunk.scene_info || prev?.scene_info,
+              engine: chunk.engine || prev?.engine,
+              images: { ...(prev?.images || {}), ...(chunk.images || {}) },
+              downloads: { ...(prev?.downloads || {}), ...(chunk.downloads || {}) },
+              timings: { ...(prev?.timings || {}), ...(chunk.timings || {}) },
+              processing: { ...(prev?.processing || {}), ...(chunk.processing || {}) }
+            }));
+            if (chunk.stage === 'complete' || chunk.stage === 'urban_ready') {
+              setIsCompleted(true);
+              setIsLoading(false);
+            }
+          } catch (e) {
+            // ignore trailing json parse error
+          }
+        }
+      } else {
+        // Fallback for non-streaming response
+        const data = await res.json();
+        setResults(data);
+        setIsResultsOpen(true);
+        setIsCompleted(true);
+        setToast({
+          type: 'success',
+          message: `4× Super-Resolution completed! Scene: ${data.scene_info?.id || 'Sentinel-2'}`
+        });
+      }
     } catch (err) {
-      clearInterval(stageTimer);
       console.error('Pipeline Error:', err);
       setToast({
         type: 'error',
@@ -249,6 +348,22 @@ export default function App() {
             onClose={() => setIsResultsOpen(false)}
           />
         </div>
+      </div>
+
+      {/* 4. Floating Left Glassmorphism Control Panel */}
+      <FloatingSidebar
+        formValues={formValues}
+        onChange={handleChange}
+        onSelectPreset={handleSelectPreset}
+        presets={presets}
+        backendHealth={backendHealth}
+        onRunPipeline={handleRunPipeline}
+        isLoading={isLoading}
+        currentStage={currentStage}
+        isCompleted={isCompleted}
+        hasResults={Boolean(results)}
+        onOpenResults={() => setIsResultsOpen(true)}
+      />
 
         {/* Documentation Page (Empty as requested) */}
         {activeNav === 'docs' && <DocumentationPage />}
