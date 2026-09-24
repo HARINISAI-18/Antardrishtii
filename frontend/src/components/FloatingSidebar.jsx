@@ -16,15 +16,17 @@ import {
   Cpu
 } from 'lucide-react';
 
-const PROGRESS_STAGES = [
-  'Querying Planetary Computer STAC',
-  'Radiometric calibration (B04, B03, B02, B08)',
-  'Running 4× Super-Resolution mosaic',
-  'Executing 9 Computer Vision analytical models',
-  'Synthesizing Multi-Spectral Analytics & Metrics',
-  'Evaluating Crop NDVI & Vegetation Health',
-  'Conducting Urban Audit & Road Network Extraction'
-];
+export const getPipelineStages = (enableDisaster = false) => {
+  const stages = [
+    'SR Image Generation',
+    'Metrics'
+  ];
+  if (enableDisaster) {
+    stages.push('Disaster Assessment');
+  }
+  stages.push('Crop Monitoring', 'Urban Analysis');
+  return stages;
+};
 
 export default function FloatingSidebar({
   formValues,
@@ -35,10 +37,15 @@ export default function FloatingSidebar({
   onRunPipeline,
   isLoading,
   currentStage = 1,
+  isCompleted = false,
   hasResults,
   onOpenResults
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const stages = getPipelineStages(Boolean(formValues.enable_disaster_assessment));
+  const totalStages = stages.length;
+  const currentStageName = stages[Math.min(currentStage - 1, totalStages - 1)] || 'Processing...';
+  const progressPercent = isCompleted ? 100 : Math.min(95, Math.round(((currentStage - 0.5) / totalStages) * 100));
 
   return (
     <div
@@ -286,33 +293,106 @@ export default function FloatingSidebar({
               )}
             </button>
 
-            {/* Live Step Progress Indicator */}
-            {isLoading && (
-              <div className="bg-primary-50/70 rounded-xl p-3 border border-accent-500/30 text-xs space-y-1.5 animate-pulse">
-                <div className="flex items-center justify-between font-semibold text-accent-700 text-[11px]">
-                  <span>STEP {currentStage}/7</span>
-                  <span>{Math.round((currentStage / 7) * 100)}%</span>
+            {/* Live Step Progress Indicator & Checklist */}
+            {(isLoading || isCompleted) && (
+              <div
+                className={`rounded-xl p-3 border text-xs space-y-2 transition-all ${
+                  isCompleted
+                    ? 'bg-emerald-50/80 border-emerald-300 shadow-sm'
+                    : 'bg-primary-50/70 border-accent-500/30'
+                }`}
+              >
+                <div className="flex items-center justify-between font-semibold text-[11px]">
+                  {isCompleted ? (
+                    <span className="flex items-center gap-1.5 text-emerald-800 font-bold">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                      ALL {totalStages} STAGES COMPLETED
+                    </span>
+                  ) : (
+                    <span className="text-accent-700 font-bold">
+                      STAGE {currentStage}/{totalStages}
+                    </span>
+                  )}
+                  <span
+                    className={`font-mono text-xs ${
+                      isCompleted ? 'text-emerald-700 font-bold' : 'text-accent-700 font-semibold'
+                    }`}
+                  >
+                    {progressPercent}%
+                  </span>
                 </div>
-                <p className="text-primary-950 text-[11px] font-semibold leading-tight">
-                  {PROGRESS_STAGES[currentStage - 1] || 'Processing...'}
-                </p>
-                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden mt-1">
+
+                {!isCompleted && (
+                  <p className="text-primary-950 text-[11px] font-semibold leading-tight flex items-center gap-1.5">
+                    <Loader2 className="h-3 w-3 animate-spin text-accent-600 shrink-0" />
+                    <span>Processing: {currentStageName}</span>
+                  </p>
+                )}
+
+                {/* Progress Bar Track */}
+                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-accent-500 h-full transition-all duration-500"
-                    style={{ width: `${(currentStage / 7) * 100}%` }}
+                    className={`h-full transition-all duration-500 ease-out ${
+                      isCompleted ? 'bg-emerald-500' : 'bg-accent-500'
+                    }`}
+                    style={{ width: `${progressPercent}%` }}
                   />
+                </div>
+
+                {/* Stages Status Checklist */}
+                <div className="space-y-1 pt-1.5 border-t border-slate-200/60">
+                  {stages.map((stageName, idx) => {
+                    const stageNum = idx + 1;
+                    const isDone = isCompleted || currentStage > stageNum;
+                    const isCurrent = isLoading && currentStage === stageNum;
+                    return (
+                      <div key={stageName} className="flex items-center justify-between text-[10px]">
+                        <span
+                          className={`flex items-center gap-1.5 ${
+                            isDone
+                              ? 'text-emerald-800 font-medium'
+                              : isCurrent
+                              ? 'text-primary-950 font-bold'
+                              : 'text-slate-400'
+                          }`}
+                        >
+                          {isDone ? (
+                            <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+                          ) : isCurrent ? (
+                            <Loader2 className="h-3 w-3 text-accent-600 animate-spin shrink-0" />
+                          ) : (
+                            <span className="h-1.5 w-1.5 rounded-full bg-slate-300 ml-0.5 mr-1 shrink-0" />
+                          )}
+                          <span>
+                            {idx + 1}. {stageName}
+                          </span>
+                        </span>
+                        <span
+                          className={`text-[9px] font-mono ${
+                            isDone
+                              ? 'text-emerald-600 font-semibold'
+                              : isCurrent
+                              ? 'text-accent-600 font-bold'
+                              : 'text-slate-400'
+                          }`}
+                        >
+                          {isDone ? 'Ready' : isCurrent ? 'Processing...' : 'Waiting'}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* View Last Result Button */}
-            {hasResults && !isLoading && (
+            {/* View Result Button */}
+            {hasResults && (
               <button
                 onClick={onOpenResults}
                 className="w-full py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-primary-900 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
               >
                 <Maximize2 className="h-3.5 w-3.5 text-accent-600" />
-                <span>View Results & Split Slider</span>
+                <span>{isLoading ? 'View Live Results & Slider' : 'View Results & Split Slider'}</span>
               </button>
             )}
           </div>

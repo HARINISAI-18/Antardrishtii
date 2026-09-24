@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   FileCode,
   Layers,
-  CheckCircle2
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
 import BeforeAfterSlider from './BeforeAfterSlider';
 import MetricsTable from './MetricsTable';
@@ -30,7 +31,12 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
 
   if (!isOpen || !results) return null;
 
-  const { scene_info, engine, metrics_table, headlines, images, disaster_assessment, crop_monitoring, urban_analysis, downloads } = results;
+  const { scene_info, engine, metrics_table, headlines, images = {}, disaster_assessment, crop_monitoring, urban_analysis, downloads = {}, processing = {} } = results;
+
+  const isMetricsProcessing = Boolean(processing.metrics && !metrics_table);
+  const isCropProcessing = Boolean(processing.crop && !crop_monitoring);
+  const isUrbanProcessing = Boolean(processing.urban && !urban_analysis);
+  const isDisasterProcessing = Boolean(processing.disaster && !disaster_assessment);
 
   return (
     <div className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6 animate-in fade-in duration-200">
@@ -137,10 +143,17 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
               }`}
             >
               <Table className="h-3.5 w-3.5" />
-              Metrics ({metrics_table?.length || 26})
+              <span>Metrics</span>
+              {isMetricsProcessing ? (
+                <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full animate-pulse">
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" /> Being processed
+                </span>
+              ) : (
+                <span className="text-[10px] text-slate-500 font-mono">({metrics_table?.length || 26})</span>
+              )}
             </button>
 
-            {crop_monitoring && (
+            {(crop_monitoring || isCropProcessing || processing.crop !== undefined) && (
               <button
                 onClick={() => setActiveTab('crop')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
@@ -150,11 +163,16 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
                 }`}
               >
                 <Sprout className="h-3.5 w-3.5" />
-                Crop Monitoring
+                <span>Crop Monitoring</span>
+                {isCropProcessing && (
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-accent-700 bg-accent-50 border border-accent-200 px-1.5 py-0.5 rounded-full animate-pulse">
+                    <Loader2 className="h-2.5 w-2.5 animate-spin" /> Being processed
+                  </span>
+                )}
               </button>
             )}
 
-            {urban_analysis && (
+            {(urban_analysis || isUrbanProcessing || processing.urban !== undefined) && (
               <button
                 onClick={() => setActiveTab('urban')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
@@ -164,11 +182,16 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
                 }`}
               >
                 <Building2 className="h-3.5 w-3.5" />
-                Urban Analysis
+                <span>Urban Analysis</span>
+                {isUrbanProcessing && (
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-full animate-pulse">
+                    <Loader2 className="h-2.5 w-2.5 animate-spin" /> Being processed
+                  </span>
+                )}
               </button>
             )}
 
-            {disaster_assessment && (
+            {(disaster_assessment || isDisasterProcessing) && (
               <button
                 onClick={() => setActiveTab('disaster')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all ${
@@ -178,7 +201,12 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
                 }`}
               >
                 <ShieldAlert className="h-3.5 w-3.5" />
-                Disaster Assessment
+                <span>Disaster Assessment</span>
+                {isDisasterProcessing && (
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full animate-pulse">
+                    <Loader2 className="h-2.5 w-2.5 animate-spin" /> Being processed
+                  </span>
+                )}
               </button>
             )}
           </div>
@@ -276,13 +304,65 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
           {/* TAB 5: QUANTITATIVE METRICS TABLE */}
           {activeTab === 'metrics' && (
             <div className="max-w-6xl mx-auto">
-              <MetricsTable metrics={metrics_table} />
+              {isMetricsProcessing ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+                  <div className="relative">
+                    <div className="h-16 w-16 rounded-2xl bg-primary-50 text-primary-900 flex items-center justify-center border border-primary-100 shadow-inner">
+                      <Table className="h-8 w-8 text-primary-700" />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white shadow">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    </span>
+                  </div>
+                  <div className="space-y-1 max-w-md">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Being processed
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mt-2">Quantitative Metrics Table</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Application metrics, PSNR, SSIM, SAM, UIQI, and per-band statistical analysis are currently being processed. Once ready, the table will be displayed here automatically.
+                    </p>
+                  </div>
+                  <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-full bg-accent-500 rounded-full animate-pulse w-3/4" />
+                  </div>
+                </div>
+              ) : (
+                <MetricsTable metrics={metrics_table} />
+              )}
             </div>
           )}
 
           {/* TAB 6: CROP MONITORING (RFMSR OUTPUT + SENTINEL-2 B04 & B08) */}
-          {activeTab === 'crop' && crop_monitoring && (
+          {activeTab === 'crop' && (
             <div className="space-y-5 max-w-6xl mx-auto">
+              {isCropProcessing ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+                  <div className="relative">
+                    <div className="h-16 w-16 rounded-2xl bg-accent-50 text-accent-700 flex items-center justify-center border border-accent-100 shadow-inner">
+                      <Sprout className="h-8 w-8 text-accent-600" />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent-500 text-white shadow">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    </span>
+                  </div>
+                  <div className="space-y-1 max-w-md">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-50 text-accent-700 border border-accent-200 text-xs font-semibold">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Being processed
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mt-2">Crop Monitoring & NDVI Analysis</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Evaluating Sentinel-2 Red (B04) and NIR (B08) reflectance, projecting NDVI maps, and computing 5-class vegetation health assessment. Once ready, it will be displayed here automatically.
+                    </p>
+                  </div>
+                  <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-full bg-accent-500 rounded-full animate-pulse w-3/4" />
+                  </div>
+                </div>
+              ) : crop_monitoring ? (
+                <>
               {/* Scientific Note Banner */}
               <div className="p-3.5 rounded-2xl bg-accent-50 border border-accent-200 text-xs text-accent-900 flex items-start gap-3">
                 <Sprout className="h-5 w-5 text-accent-600 shrink-0 mt-0.5" />
@@ -441,12 +521,39 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
                   )}
                 </div>
               </div>
+              </>) : null}
             </div>
           )}
 
           {/* TAB 7: URBAN SPATIAL ANALYSIS & REGULATORY AUDIT */}
-          {activeTab === 'urban' && urban_analysis && (
+          {activeTab === 'urban' && (
             <div className="space-y-5 max-w-6xl mx-auto">
+              {isUrbanProcessing ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+                  <div className="relative">
+                    <div className="h-16 w-16 rounded-2xl bg-sky-50 text-sky-700 flex items-center justify-center border border-sky-100 shadow-inner">
+                      <Building2 className="h-8 w-8 text-sky-600" />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-sky-500 text-white shadow">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    </span>
+                  </div>
+                  <div className="space-y-1 max-w-md">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 text-xs font-semibold">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Being processed
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mt-2">Urban Spatial Analysis & Compliance Audit</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Vectorizing building footprints, calculating waterbody buffer encroachments, and fusing OpenStreetMap road networks. Once ready, it will be displayed here automatically.
+                    </p>
+                  </div>
+                  <div className="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                    <div className="h-full bg-sky-500 rounded-full animate-pulse w-3/4" />
+                  </div>
+                </div>
+              ) : urban_analysis ? (
+                <>
               {/* Stats Bar */}
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 <div className="glass-panel p-3.5 rounded-2xl border border-slate-200 shadow-sm bg-white">
@@ -603,26 +710,52 @@ export default function ResultsDrawer({ results, isOpen, onClose }) {
                   </div>
                 </div>
               )}
+              </>) : null}
             </div>
           )}
 
           {/* TAB 8: DISASTER ASSESSMENT */}
-          {activeTab === 'disaster' && disaster_assessment && (
+          {activeTab === 'disaster' && (
             <div className="space-y-4 max-w-6xl mx-auto">
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-500">Event Assessment:</span>
-                  <span className="font-semibold text-slate-900">{disaster_assessment.event}</span>
+              {isDisasterProcessing ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+                  <div className="relative">
+                    <div className="h-16 w-16 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100 shadow-inner">
+                      <ShieldAlert className="h-8 w-8 text-amber-600" />
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white shadow">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    </span>
+                  </div>
+                  <div className="space-y-1 max-w-md">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Being processed
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800 mt-2">Disaster Assessment</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Computing multi-temporal bi-temporal difference matrices and damage classifications. Once ready, it will be displayed here automatically.
+                    </p>
+                  </div>
                 </div>
-                <span className="px-3 py-1 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  Status: {disaster_assessment.status} ({disaster_assessment.change_km2} km² change, IoU: {disaster_assessment.iou_vs_10m})
-                </span>
-              </div>
-              {disaster_assessment.disaster_image && (
-                <div className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-xl">
-                  <img src={disaster_assessment.disaster_image} alt="Disaster Assessment" className="w-full h-auto object-contain" />
-                </div>
-              )}
+              ) : disaster_assessment ? (
+                <>
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500">Event Assessment:</span>
+                      <span className="font-semibold text-slate-900">{disaster_assessment.event}</span>
+                    </div>
+                    <span className="px-3 py-1 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      Status: {disaster_assessment.status} ({disaster_assessment.change_km2} km² change, IoU: {disaster_assessment.iou_vs_10m})
+                    </span>
+                  </div>
+                  {disaster_assessment.disaster_image && (
+                    <div className="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-xl">
+                      <img src={disaster_assessment.disaster_image} alt="Disaster Assessment" className="w-full h-auto object-contain" />
+                    </div>
+                  )}
+                </>
+              ) : null}
             </div>
           )}
         </div>
