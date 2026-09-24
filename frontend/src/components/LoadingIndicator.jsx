@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, Circle, Loader2, Sparkles, Satellite } from 'lucide-react';
+import { CheckCircle2, Circle, Loader2, Satellite } from 'lucide-react';
 
 const STAGES = [
-  { id: 1, name: 'STAC Ingestion', desc: 'Searching Planetary Computer Sentinel-2 L2A catalog' },
-  { id: 2, name: 'Radiometric Calibration', desc: 'Reading B04, B03, B02, B08 & 2-98% percentile stretching' },
-  { id: 3, name: '4× Super-Resolution', desc: 'Upscaling medium-res (10 m) to high-res (2.5 m) grid' },
-  { id: 4, name: 'Geospatial Analytics', desc: 'Executing 9 specialized Computer Vision application models' },
-  { id: 5, name: 'Analytics & Reporting', desc: 'Synthesizing geospatial analytics & performance metrics' },
+  { id: 1, name: 'STAC Catalog Query', desc: 'Querying Planetary Computer Sentinel-2 L2A archive' },
+  { id: 2, name: 'Radiometric Calibration', desc: 'Calibrating B04, B03, B02, B08 reflectance with 2-98% stretching' },
+  { id: 3, name: '4× Super-Resolution', desc: 'Upscaling 10 m native pixels to 2.5 m resolution grid' },
+  { id: 4, name: 'Geospatial Analytics', desc: 'Executing 9 Remote Sensing Computer Vision models' },
+  { id: 5, name: 'Synthesis & Reporting', desc: 'Compiling quantitative metrics and compliance exports' },
 ];
 
 export default function LoadingIndicator() {
@@ -20,26 +20,20 @@ export default function LoadingIndicator() {
   }, []);
 
   return (
-    <div className="glass-panel rounded-2xl p-8 border border-slate-200 shadow-xl my-8 text-center max-w-2xl mx-auto bg-white/95">
-      <div className="relative inline-block mb-5">
-        <div className="h-16 w-16 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center mx-auto text-primary-900 shadow-sm">
-          <Satellite className="h-8 w-8 animate-bounce text-primary-900" />
-        </div>
-        <div className="absolute -top-1 -right-1">
-          <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-500"></span>
-          </span>
+    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm my-6 text-center max-w-xl mx-auto">
+      <div className="inline-block mb-3">
+        <div className="h-12 w-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto text-slate-800">
+          <Satellite className="h-6 w-6 text-slate-700" />
         </div>
       </div>
 
-      <h3 className="text-xl font-bold text-primary-900 tracking-tight">Processing Geospatial Pipeline</h3>
-      <p className="text-slate-500 text-sm mt-1 mb-8">
-        Connecting with Sentinel-2 STAC and running full-resolution super-resolution models...
+      <h3 className="text-base font-semibold text-slate-900 tracking-tight">Processing Geospatial Pipeline</h3>
+      <p className="text-slate-500 text-xs mt-0.5 mb-6">
+        Ingesting Sentinel-2 tiles and executing super-resolution reconstitutions...
       </p>
 
       {/* Steps List */}
-      <div className="space-y-3.5 text-left">
+      <div className="space-y-2.5 text-left">
         {STAGES.map((stage) => {
           const isDone = currentStage > stage.id;
           const isCurrent = currentStage === stage.id;
@@ -47,35 +41,35 @@ export default function LoadingIndicator() {
           return (
             <div
               key={stage.id}
-              className={`flex items-start gap-3.5 p-3.5 rounded-xl border transition-all ${
+              className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${
                 isCurrent
-                  ? 'bg-accent-50/70 border-accent-400 shadow-md shadow-accent-500/10'
+                  ? 'bg-slate-50 border-slate-400 text-slate-900'
                   : isDone
-                  ? 'bg-slate-50 border-slate-200 text-slate-600'
+                  ? 'bg-slate-50/60 border-slate-200 text-slate-600'
                   : 'bg-white border-slate-100 text-slate-400'
               }`}
             >
               <div className="mt-0.5">
                 {isDone ? (
-                  <CheckCircle2 className="h-5 w-5 text-accent-600" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                 ) : isCurrent ? (
-                  <Loader2 className="h-5 w-5 text-accent-600 animate-spin" />
+                  <Loader2 className="h-4 w-4 text-slate-800 animate-spin" />
                 ) : (
-                  <Circle className="h-5 w-5 text-slate-300" />
+                  <Circle className="h-4 w-4 text-slate-300" />
                 )}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className={`text-sm font-semibold ${isCurrent ? 'text-primary-950 font-bold' : isDone ? 'text-slate-800' : 'text-slate-400'}`}>
+                  <span className={`text-xs font-semibold ${isCurrent ? 'text-slate-900' : isDone ? 'text-slate-700' : 'text-slate-400'}`}>
                     {stage.name}
                   </span>
                   {isCurrent && (
-                    <span className="text-[11px] font-medium text-accent-700 bg-accent-100 px-2 py-0.5 rounded-full">
-                      Running
+                    <span className="text-[10px] font-medium text-slate-700 bg-slate-200 px-1.5 py-0.5 rounded">
+                      In Progress
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">{stage.desc}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">{stage.desc}</p>
               </div>
             </div>
           );
