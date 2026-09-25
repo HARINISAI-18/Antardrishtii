@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ZoomIn, ZoomOut, RotateCcw, Download, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Download, SlidersHorizontal, Maximize2, Compass } from 'lucide-react';
 
 export default function BeforeAfterSlider({
   beforeImage,
   afterImage,
-  beforeLabel = 'Sentinel-2 10 m (Input)',
+  beforeLabel = 'Sentinel-2 10 m (Input L2A)',
   afterLabel = 'Super-Resolved 2.5 m (Ours)',
   sceneId
 }) {
@@ -38,7 +38,6 @@ export default function BeforeAfterSlider({
     setIsDraggingSlider(true);
   };
 
-  // Pan handlers when zoomed
   const handleMouseDownPan = (e) => {
     if (zoom > 1) {
       setIsPanning(true);
@@ -95,6 +94,11 @@ export default function BeforeAfterSlider({
     setSliderPos(50);
   };
 
+  const setZoomLevel = (level) => {
+    setZoom(level);
+    if (level === 1) setPan({ x: 0, y: 0 });
+  };
+
   const zoomIn = () => setZoom((z) => Math.min(4, z + 0.5));
   const zoomOut = () => {
     setZoom((z) => {
@@ -106,49 +110,74 @@ export default function BeforeAfterSlider({
 
   return (
     <div className="flex flex-col h-full space-y-3">
-      {/* Top Toolbar: Zoom & Reset */}
-      <div className="flex items-center justify-between px-2 text-xs">
-        <div className="flex items-center gap-2 text-slate-500">
-          <SlidersHorizontal className="h-4 w-4 text-accent-600" />
-          <span>Drag the teal center divider to reveal 4× detail</span>
-        </div>
-
+      {/* Top Toolbar: Presets & Controls */}
+      <div className="flex flex-wrap items-center justify-between px-1 text-xs gap-2">
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 gap-1 shadow-sm">
+          {/* Zoom Presets */}
+          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
             <button
-              onClick={zoomOut}
-              disabled={zoom <= 1}
-              className="p-1 rounded-lg text-slate-500 hover:text-slate-800 disabled:opacity-30 transition-colors"
-              title="Zoom Out"
+              onClick={() => setZoomLevel(1)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                zoom === 1 ? 'bg-white text-blue-700 shadow-2xs border border-blue-200/60' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              <ZoomOut className="h-4 w-4" />
-            </button>
-            <span className="text-[11px] font-mono text-slate-700 px-1.5 font-medium">{Math.round(zoom * 100)}%</span>
-            <button
-              onClick={zoomIn}
-              disabled={zoom >= 4}
-              className="p-1 rounded-lg text-slate-500 hover:text-slate-800 disabled:opacity-30 transition-colors"
-              title="Zoom In"
-            >
-              <ZoomIn className="h-4 w-4" />
+              100% Fit
             </button>
             <button
-              onClick={resetView}
-              className="p-1 rounded-lg text-slate-500 hover:text-slate-800 transition-colors ml-1"
-              title="Reset View"
+              onClick={() => setZoomLevel(2)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                zoom === 2 ? 'bg-white text-blue-700 shadow-2xs border border-blue-200/60' : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              <RotateCcw className="h-3.5 w-3.5" />
+              200% Tile
+            </button>
+            <button
+              onClick={() => setZoomLevel(4)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                zoom === 4 ? 'bg-white text-blue-700 shadow-2xs border border-blue-200/60' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              400% Edges
             </button>
           </div>
 
+          <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 gap-0.5 shadow-2xs">
+            <button
+              onClick={zoomOut}
+              disabled={zoom <= 1}
+              className="p-1 rounded text-slate-600 hover:text-slate-900 disabled:opacity-30 transition-colors"
+              title="Zoom Out"
+            >
+              <ZoomOut className="h-3.5 w-3.5" />
+            </button>
+            <span className="text-[11px] font-mono text-slate-800 px-1 font-medium">{Math.round(zoom * 100)}%</span>
+            <button
+              onClick={zoomIn}
+              disabled={zoom >= 4}
+              className="p-1 rounded text-slate-600 hover:text-slate-900 disabled:opacity-30 transition-colors"
+              title="Zoom In"
+            >
+              <ZoomIn className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={resetView}
+              className="p-1 rounded text-slate-600 hover:text-slate-900 transition-colors ml-0.5"
+              title="Reset View"
+            >
+              <RotateCcw className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
           {afterImage && (
             <a
               href={afterImage}
               download={`SR_2p5m_${sceneId || 'enhanced'}.png`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-900 hover:bg-primary-950 text-white font-semibold transition-all shadow-md shadow-primary-900/20"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition-colors shadow-2xs"
             >
               <Download className="h-3.5 w-3.5" />
-              Download Enhanced SR (2.5 m)
+              <span>Download 2.5 m PNG</span>
             </a>
           )}
         </div>
@@ -158,8 +187,9 @@ export default function BeforeAfterSlider({
       <div
         ref={containerRef}
         onMouseDown={handleMouseDownPan}
-        className={`relative w-full aspect-square max-h-[68vh] rounded-2xl overflow-hidden border border-slate-200 select-none bg-slate-100 shadow-xl ${zoom > 1 ? 'cursor-grab active:cursor-grabbing' : ''
-          }`}
+        className={`relative w-full aspect-square max-h-[66vh] rounded-xl overflow-hidden border border-slate-300 select-none bg-slate-900 shadow-sm gis-reticle-frame ${
+          zoom > 1 ? 'cursor-grab active:cursor-grabbing' : ''
+        }`}
       >
         {/* Transform Wrapper for Zoom & Pan */}
         <div
@@ -200,25 +230,46 @@ export default function BeforeAfterSlider({
           onTouchStart={handleTouchStartSlider}
         >
           <div className="split-slider-handle">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="m8 7-5 5 5 5" />
               <path d="m16 7 5 5-5 5" />
             </svg>
           </div>
         </div>
 
-        {/* Floating Badges */}
-        <div className="absolute top-3 left-3 z-20 pointer-events-none">
-          <span className="glass-panel px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 border border-slate-200/90 shadow-md bg-white/95">
+        {/* Floating Labels with High-Precision Stamps */}
+        <div className="absolute top-3 left-4 z-20 pointer-events-none">
+          <span className="bg-slate-900/90 text-white px-2.5 py-1 rounded-md text-[11px] font-mono border border-slate-700/80 shadow-sm backdrop-blur-sm">
             {beforeLabel}
           </span>
         </div>
 
-        <div className="absolute top-3 right-3 z-20 pointer-events-none">
-          <span className="glass-panel px-3 py-1 rounded-lg text-xs font-semibold text-accent-700 border border-accent-300 shadow-md bg-white/95 flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5" />
+        <div className="absolute top-3 right-4 z-20 pointer-events-none">
+          <span className="bg-slate-900/90 text-white px-2.5 py-1 rounded-md text-[11px] font-mono border border-slate-700/80 shadow-sm backdrop-blur-sm">
             {afterLabel}
           </span>
+        </div>
+      </div>
+
+      {/* Cartographic Ground Metric Scale Bar */}
+      <div className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between text-[11px] font-mono text-slate-600 shadow-2xs">
+        <div className="flex items-center gap-2.5">
+          <span className="font-semibold text-slate-800">Ground Metric Scale:</span>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-20 bg-slate-900 border-x-2 border-blue-600 relative rounded-2xs overflow-visible">
+              <span className="absolute -top-3.5 left-0 text-[9px] text-slate-500 font-mono">0m</span>
+              <span className="absolute -top-3.5 right-0 text-[9px] text-blue-700 font-semibold font-mono">160m</span>
+              {/* Midpoint 80m marker */}
+              <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-slate-400" />
+            </div>
+            <span className="text-[10px] text-slate-500 ml-1">(@ 2.5m/px)</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span>Pitch: <strong className="text-blue-700 font-semibold">2.50 m</strong></span>
+          <span className="text-slate-300">|</span>
+          <span>Divider: <strong className="text-slate-900">{Math.round(sliderPos)}%</strong></span>
         </div>
       </div>
     </div>

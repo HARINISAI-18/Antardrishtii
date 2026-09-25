@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import Header from './components/Header';
 import MapDashboard from './components/MapDashboard';
 import GeocoderSearch from './components/GeocoderSearch';
 import FloatingSidebar from './components/FloatingSidebar';
 import ResultsDrawer from './components/ResultsDrawer';
 import ToastNotification from './components/ToastNotification';
+import DocumentationPage from './pages/DocumentationPage';
+import AboutUsPage from './pages/AboutUsPage';
 
 const API_BASE = 'http://localhost:8000';
 
 export default function App() {
+  const [activeNav, setActiveNav] = useState('explore');
   const [formValues, setFormValues] = useState({
     latitude: 16.5062,
     longitude: 80.6480,
@@ -277,34 +281,72 @@ export default function App() {
   const isBackendOnline = backendHealth?.status === 'online';
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#F8FAFC] font-sans selection:bg-accent-500 selection:text-white text-slate-800">
-      {/* 1. Centerpiece: Full-Screen Interactive Leaflet Map */}
-      <MapDashboard
-        latitude={formValues.latitude}
-        longitude={formValues.longitude}
-        aoiKm={formValues.aoi_km}
-        onCoordinatesChange={handleMapCoordinateChange}
-        triggerFlyTo={triggerFlyTo}
+    <div className="flex flex-col w-screen h-screen overflow-hidden bg-[#EEF2F6] font-sans selection:bg-accent-500 selection:text-white text-slate-800">
+      {/* 1. Global Navigation Header */}
+      <Header
+        backendHealth={backendHealth}
+        onRefreshHealth={fetchHealth}
+        activeNav={activeNav}
+        onNavSelect={(nav) => setActiveNav(nav)}
       />
 
-      {/* 2. Top-Center Floating Bar: Geocoder Search Box + API Online Status */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-full max-w-xl px-4 flex items-center justify-center gap-2.5">
-        <div className="flex-1 min-w-0 max-w-md">
-          <GeocoderSearch onSelectLocation={handleSelectLocation} />
-        </div>
+      {/* 2. Main Viewport Container */}
+      <main className="relative flex-1 min-h-0 w-full overflow-hidden">
+        {/* Explore & Analyze View (Full-Screen Map + Control Panels) */}
+        <div className={`relative w-full h-full ${activeNav === 'explore' ? 'block' : 'hidden'}`}>
+          {/* Centerpiece: Full-Screen Interactive Leaflet Map */}
+          <MapDashboard
+            latitude={formValues.latitude}
+            longitude={formValues.longitude}
+            aoiKm={formValues.aoi_km}
+            onCoordinatesChange={handleMapCoordinateChange}
+            triggerFlyTo={triggerFlyTo}
+            isVisible={activeNav === 'explore'}
+          />
 
-        {/* API Online Status Badge displayed beside Search Bar */}
-        <div className={`glass-panel px-3.5 py-2 rounded-xl border flex items-center gap-2 text-xs font-medium shadow-lg backdrop-blur-md shrink-0 transition-all ${isBackendOnline
-          ? 'border-accent-500/30 text-accent-700 bg-white/95 shadow-accent-500/10'
-          : 'border-rose-300 text-rose-600 bg-white/95 shadow-rose-500/10'
-          }`}>
-          <span className="relative flex h-2.5 w-2.5">
-            {isBackendOnline && (
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
-            )}
-            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isBackendOnline ? 'bg-accent-500' : 'bg-rose-500'}`}></span>
-          </span>
-          <span className="font-semibold whitespace-nowrap">{isBackendOnline ? `API Online (${backendHealth?.device || 'Connected'})` : 'API Offline'}</span>
+          {/* Top-Center Floating Bar: Geocoder Search Box + API Online Status */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-full max-w-xl px-4 flex items-center justify-center gap-2.5">
+            <div className="flex-1 min-w-0 max-w-md">
+              <GeocoderSearch onSelectLocation={handleSelectLocation} />
+            </div>
+
+            {/* API Online Status Badge */}
+            <div className={`glass-panel px-3.5 py-2 rounded-xl border flex items-center gap-2 text-xs font-medium shadow-lg backdrop-blur-md shrink-0 transition-all ${isBackendOnline
+                ? 'border-accent-500/30 text-accent-700 bg-white/95 shadow-accent-500/10'
+                : 'border-rose-300 text-rose-600 bg-white/95 shadow-rose-500/10'
+              }`}>
+              <span className="relative flex h-2.5 w-2.5">
+                {isBackendOnline && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
+                )}
+                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isBackendOnline ? 'bg-accent-500' : 'bg-rose-500'}`}></span>
+              </span>
+              <span className="font-semibold whitespace-nowrap">
+                {isBackendOnline ? `API Online (${backendHealth?.device || 'Connected'})` : 'API Offline'}
+              </span>
+            </div>
+          </div>
+
+          {/* Floating Left Glassmorphism Control Panel */}
+          <FloatingSidebar
+            formValues={formValues}
+            onChange={handleChange}
+            onSelectPreset={handleSelectPreset}
+            presets={presets}
+            backendHealth={backendHealth}
+            onRunPipeline={handleRunPipeline}
+            isLoading={isLoading}
+            currentStage={currentStage}
+            hasResults={Boolean(results)}
+            onOpenResults={() => setIsResultsOpen(true)}
+          />
+
+          {/* Production-Grade Results Drawer / Split Slider Modal */}
+          <ResultsDrawer
+            results={results}
+            isOpen={isResultsOpen}
+            onClose={() => setIsResultsOpen(false)}
+          />
         </div>
       </div>
 
@@ -323,15 +365,15 @@ export default function App() {
         onOpenResults={() => setIsResultsOpen(true)}
       />
 
-      {/* 5. Production-Grade Results Drawer / Split Slider Modal */}
-      <ResultsDrawer
-        results={results}
-        isOpen={isResultsOpen}
-        onClose={() => setIsResultsOpen(false)}
-      />
+        {/* Documentation Page (Empty as requested) */}
+        {activeNav === 'docs' && <DocumentationPage />}
 
-      {/* 6. Non-Blocking Floating Toast Notifications */}
-      <ToastNotification toast={toast} onClose={() => setToast(null)} />
+        {/* About Us Page (Empty as requested) */}
+        {activeNav === 'about' && <AboutUsPage />}
+
+        {/* Non-Blocking Floating Toast Notifications */}
+        <ToastNotification toast={toast} onClose={() => setToast(null)} />
+      </main>
     </div>
   );
 }

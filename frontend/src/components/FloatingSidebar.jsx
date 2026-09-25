@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import {
-  Satellite,
-  Play,
   Sliders,
+  Play,
   Sparkles,
   ChevronLeft,
   ChevronRight,
   ShieldAlert,
   Calendar,
   Cloud,
-  CheckCircle2,
   Loader2,
   Maximize2,
   Zap,
-  Cpu
+  MapPin
 } from 'lucide-react';
 
 export const getPipelineStages = (enableDisaster = false) => {
@@ -49,68 +47,75 @@ export default function FloatingSidebar({
 
   return (
     <div
-      className={`absolute top-4 left-4 z-30 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-12' : 'w-80 sm:w-96'
+      className={`absolute top-4 left-4 z-30 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-12' : 'w-80 sm:w-[370px]'
         }`}
     >
-      {/* Collapsed Toggle Pill */}
+      {/* 1. Collapsed Toggle Pill */}
       {isCollapsed ? (
-        <div className="glass-panel rounded-2xl p-2 shadow-2xl flex flex-col items-center gap-3 bg-white/95 border border-slate-200/90">
+        <div className="rounded-2xl p-2 shadow-[0_4px_20px_rgba(18,53,91,0.12)] flex flex-col items-center gap-3 bg-white/95 backdrop-blur-md border border-[#CBD5E1]">
           <button
             onClick={() => setIsCollapsed(false)}
-            className="h-10 w-10 rounded-xl bg-primary-50 text-primary-900 hover:bg-primary-100 flex items-center justify-center transition-colors shadow-sm"
-            title="Expand Control Panel"
+            className="h-9 w-9 rounded-xl bg-[#EFF6FF] text-[#2563EB] hover:bg-[#DBEAFE] flex items-center justify-center transition-colors shadow-2xs"
+            title="Expand Scene Controls"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4 w-4" />
           </button>
-          <div className="h-px w-6 bg-slate-200 my-1" />
-          <div className="p-2 rounded-xl bg-slate-100 text-accent-600" title="GeoResolve AI">
-            <Satellite className="h-5 w-5" />
+
+          <div className="h-px w-6 bg-[#E2E8F0] my-0.5" />
+
+          <div className="p-1 rounded-lg text-[#12355B]" title="Parameters Active">
+            <Sliders className="h-4 w-4 text-[#2563EB]" />
           </div>
+
           {hasResults && (
             <button
               onClick={onOpenResults}
-              className="p-2 rounded-xl bg-accent-50 text-accent-700 hover:bg-accent-100 transition-colors shadow-sm"
-              title="Open Results"
+              className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 flex items-center justify-center transition-colors shadow-2xs border border-emerald-200"
+              title="Open Analysis Workspace"
             >
               <Maximize2 className="h-4 w-4" />
             </button>
           )}
         </div>
       ) : (
-        /* Expanded Floating Card */
-        <div className="glass-panel rounded-2xl p-5 shadow-2xl border border-slate-200/90 bg-white/95 max-h-[92vh] overflow-y-auto flex flex-col text-slate-800">
-          {/* Header */}
-          <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+        /* 2. Expanded Floating Scene Control Card */
+        <div className="rounded-2xl p-4 sm:p-5 shadow-[0_4px_24px_rgba(18,53,91,0.14)] border border-[#CBD5E1] bg-white/95 backdrop-blur-md max-h-[calc(100vh-6.5rem)] overflow-y-auto flex flex-col text-[#12355B]">
+          {/* Header Bar */}
+          <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-primary-50 text-primary-900 flex items-center justify-center border border-primary-100 shadow-sm">
-                <Satellite className="h-4 w-4" />
+              <div className="h-9 w-9 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shadow-2xs shrink-0">
+                <Sliders className="h-4 w-4" />
               </div>
               <div>
-                <h1 className="font-bold text-sm text-primary-900 tracking-tight flex items-center gap-1.5">
-                  GeoResolve AI
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-accent-50 text-accent-700 border border-accent-200 font-medium">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold text-sm text-[#12355B] tracking-tight leading-none">
+                    Scene Configuration
+                  </h2>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE] leading-none">
                     4× SR
                   </span>
-                </h1>
-                <p className="text-[11px] text-slate-500">Satellite Super-Resolution Studio</p>
+                </div>
+                <p className="text-[11px] text-[#475569] font-medium mt-0.5">
+                  Sentinel-2 Multi-Spectral (10m → 2.5m)
+                </p>
               </div>
             </div>
 
             <button
               onClick={() => setIsCollapsed(true)}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#12355B] hover:bg-[#F1F5F9] transition-colors"
               title="Collapse Panel"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Location Presets */}
+          {/* Validated Scenarios / Presets */}
           {presets?.locations && (
-            <div className="mt-3.5">
-              <div className="text-[11px] font-semibold text-slate-500 mb-1.5 flex items-center gap-1">
+            <div className="mt-3">
+              <div className="text-[11px] font-bold text-[#475569] mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
                 <Sparkles className="h-3 w-3 text-amber-500" />
-                Validated Scenarios:
+                Validated Scenarios
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {presets.locations.map((loc) => {
@@ -124,8 +129,8 @@ export default function FloatingSidebar({
                       type="button"
                       onClick={() => onSelectPreset(loc)}
                       className={`px-2.5 py-1 rounded-lg text-xs transition-all ${isSelected
-                          ? 'bg-primary-900 text-white font-semibold shadow-md shadow-primary-900/20'
-                          : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
+                          ? 'bg-[#12355B] text-white font-semibold shadow-xs'
+                          : 'bg-[#F8FAFC] text-[#475569] hover:bg-white hover:text-[#12355B] border border-[#CBD5E1]'
                         }`}
                     >
                       {loc.name.split(' (')[0]}
@@ -136,12 +141,13 @@ export default function FloatingSidebar({
             </div>
           )}
 
-          {/* Coordinates Form */}
-          <div className="mt-4 space-y-3">
+          {/* Target Coordinates */}
+          <div className="mt-3.5 space-y-3">
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[11px] font-medium text-slate-500 mb-1">
-                  Latitude (°N/S)
+                <label className="block text-[11px] font-semibold text-[#475569] mb-1 flex items-center gap-1">
+                  <MapPin className="h-3 w-3 text-[#2563EB]" />
+                  Latitude (°N)
                 </label>
                 <input
                   type="number"
@@ -149,12 +155,13 @@ export default function FloatingSidebar({
                   name="latitude"
                   value={formValues.latitude}
                   onChange={onChange}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/20"
+                  className="w-full bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl px-2.5 py-1.5 text-xs text-[#12355B] font-mono font-medium focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 focus:bg-white transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-slate-500 mb-1">
-                  Longitude (°E/W)
+                <label className="block text-[11px] font-semibold text-[#475569] mb-1 flex items-center gap-1">
+                  <MapPin className="h-3 w-3 text-[#2563EB]" />
+                  Longitude (°E)
                 </label>
                 <input
                   type="number"
@@ -162,25 +169,25 @@ export default function FloatingSidebar({
                   name="longitude"
                   value={formValues.longitude}
                   onChange={onChange}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/20"
+                  className="w-full bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl px-2.5 py-1.5 text-xs text-[#12355B] font-mono font-medium focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 focus:bg-white transition-all"
                 />
               </div>
             </div>
 
-            {/* AOI Size selector */}
+            {/* AOI Dimension Selector */}
             <div>
-              <label className="block text-[11px] font-medium text-slate-500 mb-1">
+              <label className="block text-[11px] font-semibold text-[#475569] mb-1">
                 Area of Interest (AOI Tile Grid)
               </label>
-              <div className="grid grid-cols-3 gap-1 text-xs">
+              <div className="grid grid-cols-3 gap-1.5 text-xs">
                 {[5.12, 10.24, 15.36].map((size) => (
                   <button
                     key={size}
                     type="button"
                     onClick={() => onChange({ target: { name: 'aoi_km', value: size } })}
-                    className={`py-1.5 rounded-lg border text-center transition-all ${formValues.aoi_km === size
-                        ? 'bg-accent-50 border-accent-500 text-accent-700 font-semibold shadow-sm'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    className={`py-1.5 rounded-xl border text-center transition-all ${formValues.aoi_km === size
+                        ? 'bg-[#EFF6FF] border-[#2563EB] text-[#2563EB] font-bold shadow-2xs'
+                        : 'bg-[#F8FAFC] border-[#CBD5E1] text-[#475569] hover:text-[#12355B] hover:bg-white'
                       }`}
                   >
                     {size} km
@@ -191,8 +198,8 @@ export default function FloatingSidebar({
 
             {/* Date Window */}
             <div>
-              <label className="block text-[11px] font-medium text-slate-500 mb-1 flex items-center gap-1">
-                <Calendar className="h-3 w-3 text-sky-600" />
+              <label className="block text-[11px] font-semibold text-[#475569] mb-1 flex items-center gap-1">
+                <Calendar className="h-3 w-3 text-[#2563EB]" />
                 STAC Search Date Range
               </label>
               <input
@@ -200,15 +207,15 @@ export default function FloatingSidebar({
                 name="date_range"
                 value={formValues.date_range}
                 onChange={onChange}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/20"
+                className="w-full bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl px-2.5 py-1.5 text-xs text-[#12355B] font-mono font-medium focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 focus:bg-white transition-all"
                 placeholder="YYYY-MM-DD/YYYY-MM-DD"
               />
             </div>
 
             {/* Cloud slider */}
-            <div className="flex items-center justify-between text-xs pt-1">
-              <span className="text-slate-500 text-[11px] flex items-center gap-1">
-                <Cloud className="h-3 w-3 text-blue-600" />
+            <div className="flex items-center justify-between text-xs pt-0.5">
+              <span className="text-[#475569] text-[11px] font-semibold flex items-center gap-1">
+                <Cloud className="h-3 w-3 text-sky-600" />
                 Max Cloud:
               </span>
               <div className="flex items-center gap-2">
@@ -220,22 +227,22 @@ export default function FloatingSidebar({
                   name="max_cloud"
                   value={formValues.max_cloud}
                   onChange={onChange}
-                  className="w-20 accent-[#0EA5A9]"
+                  className="w-24 accent-[#2563EB] cursor-pointer"
                 />
-                <span className="font-mono text-slate-800 font-semibold text-[11px] w-8 text-right">
+                <span className="font-mono text-[#12355B] font-bold text-[11px] w-9 text-right bg-[#F1F5F9] px-1 py-0.5 rounded border border-[#CBD5E1]">
                   {formValues.max_cloud}%
                 </span>
               </div>
             </div>
 
             {/* SR Engine Selector */}
-            <div className="pt-1">
-              <label className="block text-[11px] font-medium text-slate-500 mb-1 flex items-center justify-between">
+            <div className="pt-0.5">
+              <label className="block text-[11px] font-semibold text-[#475569] mb-1 flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   <Zap className="h-3 w-3 text-amber-500" />
                   SR Acceleration Engine
                 </span>
-                <span className="text-[10px] text-slate-600 font-mono px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">
+                <span className="text-[10px] text-[#475569] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F1F5F9] border border-[#CBD5E1]">
                   {backendHealth?.device || 'CPU'}
                 </span>
               </label>
@@ -243,15 +250,12 @@ export default function FloatingSidebar({
                 name="engine_mode"
                 value={formValues.engine_mode || 'auto'}
                 onChange={onChange}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-accent-500 focus:ring-1 focus:ring-accent-500/20"
+                className="w-full bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl px-2 py-1.5 text-xs text-[#12355B] font-medium focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 focus:bg-white"
               >
                 <option value="auto">Adaptive Auto (Recommended)</option>
                 <option value="fast">Multi-Scale Reconstitution Engine (~11s, CPU)</option>
                 <option value="rfmsr">RFMSR Flow-Matching Neural Engine (DiT)</option>
               </select>
-              <p className="text-[10px] text-slate-400 mt-1 leading-tight">
-                Auto selects ~11s multi-scale synthesis on CPU, or multi-step DiT on GPU.
-              </p>
             </div>
 
             {/* Disaster Assessment Toggle */}
@@ -261,9 +265,9 @@ export default function FloatingSidebar({
                 name="enable_disaster_assessment"
                 checked={formValues.enable_disaster_assessment}
                 onChange={onChange}
-                className="rounded border-slate-300 text-accent-600 focus:ring-accent-500 h-3.5 w-3.5 bg-slate-50"
+                className="rounded border-[#CBD5E1] text-[#2563EB] focus:ring-[#2563EB] h-3.5 w-3.5 bg-[#F8FAFC]"
               />
-              <span className="text-slate-700 text-[11px] flex items-center gap-1 font-medium">
+              <span className="text-[#12355B] text-[11px] flex items-center gap-1 font-semibold">
                 <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />
                 Pre/Post Disaster Change Detection
               </span>
@@ -271,18 +275,18 @@ export default function FloatingSidebar({
           </div>
 
           {/* Action & Progress */}
-          <div className="mt-5 pt-3.5 border-t border-slate-100 space-y-2.5">
+          <div className="mt-4 pt-3 border-t border-[#E2E8F0] space-y-2">
             <button
               onClick={onRunPipeline}
               disabled={isLoading}
-              className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide uppercase transition-all shadow-md flex items-center justify-center gap-2 ${isLoading
+              className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 ${isLoading
                   ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                  : 'bg-primary-900 hover:bg-primary-950 text-white shadow-primary-900/20 active:scale-[0.98]'
+                  : 'bg-[#12355B] hover:bg-[#1E40AF] text-white shadow-[#12355B]/20 active:scale-[0.98]'
                 }`}
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin text-accent-300" />
+                  <Loader2 className="h-4 w-4 animate-spin text-[#0F9D9A]" />
                   <span>Processing Imagery...</span>
                 </>
               ) : (
@@ -389,7 +393,7 @@ export default function FloatingSidebar({
             {hasResults && (
               <button
                 onClick={onOpenResults}
-                className="w-full py-2 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-primary-900 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                className="w-full py-2 px-3 rounded-xl border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] text-[#12355B] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
               >
                 <Maximize2 className="h-3.5 w-3.5 text-accent-600" />
                 <span>{isLoading ? 'View Live Results & Slider' : 'View Results & Split Slider'}</span>

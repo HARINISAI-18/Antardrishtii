@@ -63,17 +63,17 @@ export default function GeocoderSearch({ onSelectLocation }) {
 
   return (
     <div ref={dropdownRef} className="relative w-full">
-      <div className="glass-panel rounded-xl px-3 py-2 flex items-center gap-2 border border-slate-200/90 shadow-lg bg-white/95 focus-within:border-accent-500 focus-within:ring-2 focus-within:ring-accent-500/20 transition-all">
-        <Search className="h-4 w-4 text-accent-600 shrink-0" />
+      <div className="bg-white rounded-lg px-3 py-2 flex items-center gap-2 border border-slate-300 shadow-sm focus-within:border-slate-900 focus-within:ring-1 focus-within:ring-slate-900 transition-all">
+        <Search className="h-4 w-4 text-slate-400 shrink-0" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
-          placeholder="Search city, region, or landmark..."
-          className="w-full bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none"
+          placeholder="Search city, coordinate, or landmark..."
+          className="w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
         />
-        {isSearching && <Loader2 className="h-4 w-4 text-accent-500 animate-spin shrink-0" />}
+        {isSearching && <Loader2 className="h-4 w-4 text-slate-500 animate-spin shrink-0" />}
         {query && !isSearching && (
           <button onClick={handleClear} className="text-slate-400 hover:text-slate-600 p-0.5">
             <X className="h-3.5 w-3.5" />
@@ -83,16 +83,16 @@ export default function GeocoderSearch({ onSelectLocation }) {
 
       {/* Autocomplete Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 glass-panel rounded-xl border border-slate-200/90 shadow-2xl overflow-hidden z-50 divide-y divide-slate-100 bg-white/95">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg border border-slate-200 shadow-lg overflow-hidden z-50 divide-y divide-slate-100">
           {results.map((item) => (
             <button
               key={item.place_id}
               onClick={() => handlePick(item)}
               className="w-full text-left px-3.5 py-2.5 hover:bg-slate-50 transition-colors flex items-start gap-2.5 text-xs group"
             >
-              <MapPin className="h-4 w-4 text-slate-400 group-hover:text-accent-600 mt-0.5 shrink-0 transition-colors" />
+              <MapPin className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-900 mt-0.5 shrink-0 transition-colors" />
               <div className="truncate">
-                <div className="font-semibold text-slate-800 group-hover:text-primary-900 truncate">
+                <div className="font-medium text-slate-800 group-hover:text-slate-900 truncate">
                   {item.display_name.split(',')[0]}
                 </div>
                 <div className="text-[11px] text-slate-500 truncate mt-0.5">

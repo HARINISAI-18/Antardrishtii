@@ -1,18 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
-import { Layers, Compass, Crosshair } from 'lucide-react';
+import { Layers, Crosshair } from 'lucide-react';
 
 const BASEMAPS = {
   satellite: {
     name: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and GIS Community',
-    maxZoom: 19
-  },
-  dark: {
-    name: 'Dark Matter',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     maxZoom: 19
   },
   streets: {
@@ -28,7 +22,8 @@ export default function MapDashboard({
   longitude,
   aoiKm,
   onCoordinatesChange,
-  triggerFlyTo
+  triggerFlyTo,
+  isVisible = true
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -39,7 +34,7 @@ export default function MapDashboard({
   const [activeBasemap, setActiveBasemap] = useState('satellite');
   const [zoomLevel, setZoomLevel] = useState(13);
 
-  // Helper to calculate square bounding box matching backend N_PX calculation
+  // Calculate square bounding box matching backend N_PX calculation
   const getAoiBounds = (lat, lon, km) => {
     const nPx = Math.max(512, Math.min(2048, Math.round((km * 1000) / 10 / 512) * 512));
     const halfDeg = (nPx * 10.0) / 2.0 / 111320.0;
@@ -49,24 +44,21 @@ export default function MapDashboard({
     ];
   };
 
-  // Custom Neon Pin Icon
+  // Clean, professional GIS pin icon with Geospatial Teal #0F9D9A and Deep Navy #12355B
   const createPinIcon = () => {
     return L.divIcon({
-      className: 'custom-pin-pulse',
+      className: 'custom-pin-marker',
       html: `
         <div style="transform: translate(-50%, -100%); cursor: grab;">
-          <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <filter id="shadow" x="-4" y="0" width="40" height="46" filterUnits="userSpaceOnUse">
-              <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#1E3A8A" flood-opacity="0.35"/>
-            </filter>
-            <path g="M16 0C7.16344 0 0 7.16344 0 16C0 26.5 16 42 16 42C16 42 32 26.5 32 16C32 7.16344 24.8366 0 16 0Z" fill="#1E3A8A" stroke="#0EA5A9" stroke-width="2.5" filter="url(#shadow)"/>
-            <circle cx="16" cy="16" r="6" fill="#0EA5A9"/>
-            <circle cx="16" cy="16" r="2.5" fill="#ffffff"/>
+          <svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 0C6.26801 0 0 6.26801 0 14C0 23.5 14 36 14 36C14 36 28 23.5 28 14C28 6.26801 21.732 0 14 0Z" fill="#12355B" stroke="#ffffff" stroke-width="2"/>
+            <circle cx="14" cy="14" r="5" fill="#0F9D9A"/>
+            <circle cx="14" cy="14" r="2" fill="#ffffff"/>
           </svg>
         </div>
       `,
-      iconSize: [32, 42],
-      iconAnchor: [16, 42]
+      iconSize: [28, 36],
+      iconAnchor: [14, 36]
     });
   };
 
@@ -108,7 +100,6 @@ export default function MapDashboard({
 
     marker.on('drag', (e) => {
       const { lat, lng } = e.target.getLatLng();
-      // Update AOI rectangle continuously
       if (aoiRectRef.current) {
         aoiRectRef.current.setBounds(getAoiBounds(lat, lng, aoiKm));
       }
@@ -134,14 +125,14 @@ export default function MapDashboard({
       setZoomLevel(map.getZoom());
     });
 
-    // AOI Bounding Box Overlay
+    // AOI Bounding Box Overlay (Geospatial Teal #0F9D9A, clean dashed outline)
     const bounds = getAoiBounds(latitude, longitude, aoiKm);
     const rect = L.rectangle(bounds, {
-      color: '#0EA5A9',
+      color: '#0F9D9A',
       weight: 2,
-      dashArray: '5, 5',
-      fillColor: '#0EA5A9',
-      fillOpacity: 0.15
+      dashArray: '6, 6',
+      fillColor: '#0F9D9A',
+      fillOpacity: 0.12
     }).addTo(map);
 
     aoiRectRef.current = rect;
@@ -192,10 +183,19 @@ export default function MapDashboard({
   useEffect(() => {
     if (!mapInstanceRef.current || !triggerFlyTo) return;
     mapInstanceRef.current.flyTo([latitude, longitude], 13, {
-      duration: 1.6,
+      duration: 1.4,
       easeLinearity: 0.25
     });
   }, [triggerFlyTo]);
+
+  // Recalculate size when switching views
+  useEffect(() => {
+    if (isVisible && mapInstanceRef.current) {
+      setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize();
+      }, 50);
+    }
+  }, [isVisible]);
 
   // Recenter button
   const handleRecenter = () => {
@@ -211,15 +211,16 @@ export default function MapDashboard({
 
       {/* Layer Switcher & Recenter Overlay (Top-Right) */}
       <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
-        <div className="glass-panel rounded-xl p-1.5 flex items-center gap-1 shadow-md border border-slate-200/90 bg-white/95">
+        <div className="bg-white rounded-xl p-1 flex items-center gap-1 shadow-card border border-[#E2E8F0]">
           {Object.entries(BASEMAPS).map(([key, config]) => (
             <button
               key={key}
               onClick={() => setActiveBasemap(key)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${activeBasemap === key
-                ? 'bg-primary-900 text-white font-semibold shadow-md shadow-primary-900/20'
-                : 'text-slate-600 hover:text-primary-900 hover:bg-slate-100'
-                }`}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                activeBasemap === key
+                  ? 'bg-[#2563EB] text-white shadow-xs'
+                  : 'text-[#12355B] hover:bg-[#F1F5F9]'
+              }`}
             >
               {config.name}
             </button>
@@ -228,29 +229,29 @@ export default function MapDashboard({
 
         <button
           onClick={handleRecenter}
-          className="glass-panel p-2.5 rounded-xl text-slate-600 hover:text-accent-600 hover:border-accent-500/40 border border-slate-200/90 bg-white/95 transition-all shadow-md"
-          title="Recenter Map on Target Pin"
+          className="bg-white p-2 rounded-xl text-[#12355B] hover:bg-[#F1F5F9] border border-[#E2E8F0] transition-colors shadow-card"
+          title="Recenter map on pin"
         >
-          <Crosshair className="h-4 w-4" />
+          <Crosshair className="h-4 w-4 text-[#0F9D9A]" />
         </button>
       </div>
 
-      {/* Real-time Coordinate HUD Bar (Bottom-Right, above attribution) */}
-      <div className="absolute bottom-8 left-4 sm:left-auto sm:right-16 z-20 pointer-events-none">
-        <div className="glass-panel px-3.5 py-1.5 rounded-xl border border-slate-200/90 bg-white/95 flex items-center gap-4 text-xs font-mono text-slate-700 shadow-xl backdrop-blur-md">
-          <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">LAT:</span>
-            <span className="text-primary-900 font-semibold">{latitude.toFixed(5)}°</span>
+      {/* Real-time Coordinate Status Bar (Bottom-Right, above attribution) */}
+      <div className="absolute bottom-6 left-4 sm:left-auto sm:right-16 z-20 pointer-events-none">
+        <div className="bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-3 text-xs font-mono text-slate-700 shadow-sm">
+          <div className="flex items-center gap-1">
+            <span className="text-slate-400">LAT</span>
+            <span className="text-slate-900 font-medium">{latitude.toFixed(5)}°</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-slate-400">LON:</span>
-            <span className="text-primary-900 font-semibold">{longitude.toFixed(5)}°</span>
+          <div className="flex items-center gap-1">
+            <span className="text-slate-400">LON</span>
+            <span className="text-slate-900 font-medium">{longitude.toFixed(5)}°</span>
           </div>
-          <div className="flex items-center gap-1.5 hidden sm:flex">
-            <span className="text-slate-400">ZOOM:</span>
-            <span className="text-slate-800 font-medium">{zoomLevel}</span>
+          <div className="flex items-center gap-1 hidden sm:flex">
+            <span className="text-slate-400">ZOOM</span>
+            <span className="text-slate-900 font-medium">{zoomLevel}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-accent-700 font-sans border-l border-slate-200 pl-3">
+          <div className="flex items-center gap-1 text-[11px] text-slate-600 font-sans border-l border-slate-200 pl-2.5">
             <span>AOI: {aoiKm} km</span>
           </div>
         </div>

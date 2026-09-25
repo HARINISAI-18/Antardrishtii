@@ -8,184 +8,172 @@ export default function ImageComparison({ images, sceneInfo, disasterInfo }) {
   if (!images) return null;
 
   return (
-    <div className="glass-panel rounded-2xl border border-slate-800 shadow-xl overflow-hidden mt-8">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mt-6">
       {/* Header & Tabs */}
-      <div className="p-4 sm:p-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-            <Layers className="h-5 w-5" />
+          <div className="p-1.5 rounded-lg bg-slate-100 text-slate-700">
+            <Layers className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-white">Visual Analytics & Imagery Gallery</h3>
-            <p className="text-xs text-slate-400">
-              Inspection across 10 m input, 4× bicubic baseline, and 2.5 m super-resolved outputs
+            <h3 className="text-sm font-semibold text-slate-900">Visual Analytics Gallery</h3>
+            <p className="text-xs text-slate-500">
+              Side-by-side verification: 10 m input, 4× bicubic interpolation, and 2.5 m super-resolved result
             </p>
           </div>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+        <div className="flex bg-slate-100 p-0.5 rounded-lg text-xs gap-0.5">
           <button
             onClick={() => setActiveTab('comparison')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${
               activeTab === 'comparison'
-                ? 'bg-brand-500/20 text-brand-400 font-medium border border-brand-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-white text-slate-900 font-medium shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Split className="h-3.5 w-3.5" />
-            Comparison
+            <span>Comparison</span>
           </button>
-
 
           {disasterInfo && (
             <button
               onClick={() => setActiveTab('disaster')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-colors ${
                 activeTab === 'disaster'
-                  ? 'bg-amber-500/20 text-amber-400 font-medium border border-amber-500/30'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white text-slate-900 font-medium shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Disaster Assessment
+              <span>Disaster Assessment</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Tab Contents */}
-      <div className="p-6">
+      <div className="p-5">
         {/* Tab 1: Comparison */}
         {activeTab === 'comparison' && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* 10 m Input */}
-              <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800">
+              <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-300">Sentinel-2 10 m (Input)</span>
-                  <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Native L2A</span>
+                  <span className="text-xs font-semibold text-slate-800">1. Sentinel-2 10 m (Input)</span>
+                  <span className="text-[10px] text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono">
+                    Native L2A
+                  </span>
                 </div>
                 <div
-                  className="relative rounded-lg overflow-hidden border border-slate-800 aspect-square group cursor-pointer"
+                  className="relative rounded-md overflow-hidden border border-slate-200 aspect-square group cursor-pointer bg-slate-900"
                   onClick={() => setModalImage({ src: images.input_10m, title: 'Sentinel-2 RGB 10 m Input' })}
                 >
-                  <img src={images.input_10m} alt="10m Input" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize2 className="h-6 w-6 text-white" />
+                  <img src={images.input_10m} alt="10m Input" className="w-full h-full object-contain" />
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="h-5 w-5 text-white" />
                   </div>
                 </div>
               </div>
 
               {/* Bicubic ×4 Baseline */}
-              <div className="bg-slate-900/60 rounded-xl p-3 border border-slate-800">
+              <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-300">Bicubic ×4 Baseline</span>
-                  <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Standard Interpolation</span>
+                  <span className="text-xs font-semibold text-slate-800">2. Bicubic 4× (Baseline)</span>
+                  <span className="text-[10px] text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono">
+                    Interpolation
+                  </span>
                 </div>
                 <div
-                  className="relative rounded-lg overflow-hidden border border-slate-800 aspect-square group cursor-pointer"
-                  onClick={() => setModalImage({ src: images.bicubic_baseline, title: 'Bicubic ×4 Baseline' })}
+                  className="relative rounded-md overflow-hidden border border-slate-200 aspect-square group cursor-pointer bg-slate-900"
+                  onClick={() => setModalImage({ src: images.bicubic_baseline, title: 'Bicubic 4× Baseline' })}
                 >
-                  <img src={images.bicubic_baseline} alt="Bicubic Baseline" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize2 className="h-6 w-6 text-white" />
+                  <img src={images.bicubic_baseline} alt="Bicubic Baseline" className="w-full h-full object-contain" />
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="h-5 w-5 text-white" />
                   </div>
                 </div>
               </div>
 
               {/* Super-Resolved 2.5 m (Ours) */}
-              <div className="bg-brand-950/20 rounded-xl p-3 border border-brand-500/40">
+              <div className="bg-slate-50 rounded-lg p-3 border border-slate-300">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-brand-400">Super-Resolved 2.5 m (Ours)</span>
-                  <span className="text-[10px] text-brand-400 bg-brand-500/10 border border-brand-500/20 px-2 py-0.5 rounded font-medium">
-                    16× Finer Pixel Area
+                  <span className="text-xs font-semibold text-slate-900">3. Super-Resolved 2.5 m (Ours)</span>
+                  <span className="text-[10px] text-slate-800 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono font-medium">
+                    16× Area Detail
                   </span>
                 </div>
                 <div
-                  className="relative rounded-lg overflow-hidden border border-brand-500/30 aspect-square group cursor-pointer"
-                  onClick={() => setModalImage({ src: images.sr_2p5m, title: 'Super-Resolved 2.5 m (Ours)' })}
+                  className="relative rounded-md overflow-hidden border border-slate-200 aspect-square group cursor-pointer bg-slate-900"
+                  onClick={() => setModalImage({ src: images.sr_2p5m, title: 'Super-Resolved 2.5 m' })}
                 >
-                  <img src={images.sr_2p5m} alt="SR 2.5m" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize2 className="h-6 w-6 text-white" />
+                  <img src={images.sr_2p5m} alt="Super-Resolved 2.5m" className="w-full h-full object-contain" />
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="h-5 w-5 text-white" />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Side-by-side composite */}
+            {/* Composite Comparison Image */}
             {images.comparison && (
-              <div className="bg-slate-900/40 rounded-xl p-4 border border-slate-800">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-slate-300">Combined Inspection Composite</span>
+              <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200">
+                <div className="flex items-center justify-between mb-2.5 text-xs">
+                  <span className="font-medium text-slate-800">Analytical Difference Comparison Heatmap</span>
                   <a
                     href={images.comparison}
-                    download="comparison_figure.png"
-                    className="flex items-center gap-1.5 text-xs text-brand-400 hover:underline"
+                    download="comparison_heatmap.png"
+                    className="text-slate-700 hover:text-slate-900 font-medium flex items-center gap-1 transition-colors"
                   >
-                    <Download className="h-3.5 w-3.5" />
-                    Download Composite
+                    <Download className="h-3.5 w-3.5" /> <span>Download Figure</span>
                   </a>
                 </div>
-                <div
-                  className="rounded-lg overflow-hidden border border-slate-800 cursor-pointer group relative"
-                  onClick={() => setModalImage({ src: images.comparison, title: 'Comparison Figure' })}
-                >
-                  <img src={images.comparison} alt="Combined Comparison" className="w-full h-auto object-contain" />
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Maximize2 className="h-6 w-6 text-white" />
-                  </div>
-                </div>
+                <img
+                  src={images.comparison}
+                  alt="Comparison Figure"
+                  className="w-full h-auto rounded border border-slate-200 bg-white"
+                />
               </div>
             )}
           </div>
         )}
 
-
-        {/* Tab 4: Disaster Assessment */}
+        {/* Tab 2: Disaster Assessment */}
         {activeTab === 'disaster' && disasterInfo && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>Pre vs Post Disaster Change Detection & Damage Footprint</span>
-              <span className={`px-2.5 py-0.5 rounded-full font-semibold ${
-                disasterInfo.status === 'CONFIRMED'
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-              }`}>
-                Status: {disasterInfo.status} (Change: {disasterInfo.change_km2} km², IoU: {disasterInfo.iou_vs_10m})
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs flex items-center justify-between">
+              <div>
+                <span className="font-medium text-slate-800">Assessed Disaster Event: </span>
+                <span className="text-slate-600">{disasterInfo.event || 'Regional Analysis'}</span>
+              </div>
+              <span className="font-mono text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded">
+                Impact Area: {disasterInfo.change_km2 || '0'} km²
               </span>
             </div>
             {disasterInfo.disaster_image && (
-              <div
-                className="rounded-xl overflow-hidden border border-slate-800 cursor-pointer group relative bg-slate-900"
-                onClick={() => setModalImage({ src: disasterInfo.disaster_image, title: 'Disaster Assessment' })}
-              >
-                <img src={disasterInfo.disaster_image} alt="Disaster Overview" className="w-full h-auto object-contain" />
-                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Maximize2 className="h-8 w-8 text-white" />
-                </div>
+              <div className="rounded-lg overflow-hidden border border-slate-200">
+                <img src={disasterInfo.disaster_image} alt="Disaster Assessment" className="w-full h-auto object-contain" />
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Fullscreen Modal */}
+      {/* Modal Lightbox */}
       {modalImage && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative max-w-6xl w-full max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between pb-3 text-white">
-              <span className="font-semibold text-sm">{modalImage.title}</span>
-              <button
-                onClick={() => setModalImage(null)}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
-              >
-                <X className="h-5 w-5" />
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4"
+          onClick={() => setModalImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-xl p-3 border border-slate-300" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200 mb-2">
+              <span className="text-xs font-semibold text-slate-900">{modalImage.title}</span>
+              <button onClick={() => setModalImage(null)} className="p-1 rounded hover:bg-slate-100 text-slate-500">
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="flex-1 overflow-auto rounded-xl border border-slate-800 flex items-center justify-center bg-slate-950">
-              <img src={modalImage.src} alt={modalImage.title} className="max-h-full max-w-full object-contain" />
-            </div>
+            <img src={modalImage.src} alt={modalImage.title} className="max-h-[75vh] w-auto mx-auto object-contain rounded" />
           </div>
         </div>
       )}

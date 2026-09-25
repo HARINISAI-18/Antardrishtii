@@ -6,22 +6,24 @@
 
 @layer base {
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     overflow: hidden;
-    background-color: #F8FAFC;
-    color: #1e293b;
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   code,
   pre {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 }
 
-/* Custom Scrollbars */
+/* Custom Workstation Scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -30,111 +32,107 @@
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Glassmorphism Styles (Tailored for #F8FAFC soft white & #1E3A8A deep blue) */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  box-shadow: 0 10px 30px -10px rgba(30, 58, 138, 0.12), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
-}
-
-.glass-panel-subtle {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-/* Leaflet UI Overrides for Light / Soft White Theme */
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  background-color: #F8FAFC !important;
-}
-
-.leaflet-bar {
-  border: 1px solid rgba(226, 232, 240, 0.9) !important;
-  border-radius: 12px !important;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.1) !important;
-}
-
-.leaflet-bar a {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  color: #1E3A8A !important;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
-}
-
-.leaflet-bar a:hover {
-  background-color: #eff6ff !important;
-  color: #0EA5A9 !important;
-}
-
-.leaflet-control-attribution {
-  background: rgba(255, 255, 255, 0.88) !important;
-  color: #64748b !important;
-  font-size: 10px !important;
-  border-top-left-radius: 8px;
-  border-left: 1px solid rgba(226, 232, 240, 0.8);
-  border-top: 1px solid rgba(226, 232, 240, 0.8);
-  backdrop-filter: blur(6px);
-}
-
-.leaflet-control-attribution a {
-  color: #1E3A8A !important;
-}
-
-/* Custom Marker Pulse (Accent Teal #0EA5A9) */
-.custom-pin-pulse {
+/* GIS Viewfinder Frame with corner reticles */
+.gis-reticle-frame {
   position: relative;
 }
 
-.custom-pin-pulse::after {
+.gis-reticle-frame::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 24px;
-  height: 24px;
-  margin-top: -12px;
-  margin-left: -12px;
-  border-radius: 50%;
-  background: rgba(14, 165, 169, 0.35);
-  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  top: 8px;
+  left: 8px;
+  width: 14px;
+  height: 14px;
+  border-top: 2px solid rgba(255, 255, 255, 0.7);
+  border-left: 2px solid rgba(255, 255, 255, 0.7);
   pointer-events: none;
+  z-index: 20;
 }
 
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.6);
-    opacity: 0.9;
-  }
-
-  80%,
-  100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
+.gis-reticle-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 14px;
+  height: 14px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+  border-right: 2px solid rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  z-index: 20;
 }
 
-/* Before / After Slider Styling with Accent Teal #0EA5A9 */
+/* Workstation Card Styles */
+.workstation-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+}
+
+/* Leaflet UI Overrides: Clean, Human-Engineered Map Controls */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #f1f5f9 !important;
+}
+
+.leaflet-bar {
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1) !important;
+}
+
+.leaflet-bar a {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.leaflet-bar a:hover {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #64748b !important;
+  font-size: 11px !important;
+  border-top-left-radius: 6px;
+  border-left: 1px solid #e2e8f0;
+  border-top: 1px solid #e2e8f0;
+  padding: 2px 6px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #1d4ed8 !important;
+}
+
+/* Standard Map Target Pin Marker (Crisp & Professional) */
+.custom-pin-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* High-Precision Split Slider */
 .split-slider-divider {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: #0EA5A9;
-  box-shadow: 0 0 10px rgba(14, 165, 169, 0.75);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 4px rgba(0, 0, 0, 0.3);
   cursor: ew-resize;
   z-index: 30;
 }
@@ -144,21 +142,21 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background: #ffffff;
-  border: 2px solid #0EA5A9;
+  border: 2px solid #2563eb;
   border-radius: 50%;
-  box-shadow: 0 2px 12px rgba(14, 165, 169, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), 0 1px 3px rgba(15, 23, 42, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0EA5A9;
+  color: #2563eb;
   cursor: ew-resize;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .split-slider-handle:hover {
-  background: #f0fdfa;
   transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.35);
 }
